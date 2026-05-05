@@ -1,13 +1,19 @@
 """
-Utility benchmark pipeline package.
+Extractor package.
 
-Modules:
-    models         — DataPoint, ExtractionAttempt, METRICS registry
-    fetcher        — HTTP layer with retries, rate limiting, attempt logging
-    validate       — per-metric validation (range, unit, null/NaN checks)
-    orchestrator   — runs registered extractors and assembles DataPoints
-    export         — CSV / Excel output
-    ai_layer       — optional Anthropic-powered audit + insights
+Importing this module triggers registration of every extractor against
+the metric → extractors map in extractors.base.EXTRACTOR_PRIORITY.
+
+Order of imports here matters only for tie-breaking when two extractors
+declare the same base_confidence — earlier imports get tried first.  We
+list them best-source-first.
 """
 
-__version__ = "1.0.0"
+from . import sec_edgar          # noqa: F401  (revenue)
+from . import propublica_990     # noqa: F401  (charitable_giving, foundation_assets)
+from . import epa_egrid          # noqa: F401  (carbon_emissions)
+from . import eia_reliability    # noqa: F401  (saidi)
+from . import jd_power           # noqa: F401  (customer_satisfaction)
+from . import csr_report         # noqa: F401  (renewable_pct, energy_assistance, etc.)
+
+from .base import EXTRACTOR_PRIORITY    # re-export for orchestrator
